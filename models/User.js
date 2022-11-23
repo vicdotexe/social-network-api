@@ -33,12 +33,13 @@ const userSchema = new Mongoose.Schema(
     {
         toJSON:{
             virtuals:true
-        }
+        },
+        id:false
     }
 );
 
 userSchema.virtual('friendCount')
-    .get(()=>{this.friends.length})
+    .get(function(){return this.friends ? this.friends.length : 0})
 
 const User = Mongoose.model('User', userSchema)
 

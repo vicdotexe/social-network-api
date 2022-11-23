@@ -12,11 +12,6 @@ connection.once('open', async()=>{
         email:"vicdotexe@gmail.com"
     });
 
-    const thought = await Thought.create({
-        thoughtText: "test"
-    })
-    const c = thought.get('createdAt');
-    console.log(c);
     console.log('Seeded!');
     process.exit(0);
 })

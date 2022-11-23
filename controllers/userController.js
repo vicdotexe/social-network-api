@@ -2,5 +2,53 @@ const {ObjectId} = require('mongoose').Types;
 const {User, Thought, reactionSchema} = require('../models')
 
 module.exports = {
-
+    async getAllUsers(req,res){
+        try{
+            const allUsers = await User.find();
+            return res.status(200).json(allUsers);
+        }catch(err){
+            return res.status(500).json(err.message);
+        }
+    },
+    async getSingleUser(req,res){
+        try{
+            const user = await User.findById(req.params.id)
+            if (!user){
+                return res.status(404).json({message:"No user with that ID"})
+            }
+            return res.status(200).json(user);
+        }catch(err){
+            return res.status(500).json(err.message);
+        }
+    },
+    async createUser(req,res){
+        try{
+            const user = await User.create(req.body);
+            return res.status(201).json(user);
+        }catch(err){
+            return res.status(400).json(err.message);
+        }
+    },
+    async updateUser(req,res){
+        try{
+            const user = await User.findByIdAndUpdate(req.params.id, req.body, {new:true})
+            return res.status(201).json(user);
+        }catch(err){
+            return res.status(400).json(err.message);
+        }
+    },
+    async deleteUser(req,res){
+        try{
+            const user = await User.findByIdAndDelete(req.params.id);
+            if (user){
+                await Thought.deleteMany({
+                    username:user.username
+                });
+                return res.status(201).json({message:"user deleted"});
+            }
+            return res.status(404).json({message:"No user with that ID"})
+        }catch(err){
+            return res.status(400).json(err.message);
+        }
+    }
 }
