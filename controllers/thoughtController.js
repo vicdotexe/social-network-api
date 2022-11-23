@@ -10,45 +10,74 @@ module.exports = {
             return res.status(500).json(err.message);
         }
     },
-    async getSingleUser(req,res){
+    async getSingleThought(req,res){
         try{
-            const user = await User.findById(req.params.id)
-            if (!user){
-                return res.status(404).json({message:"No user with that ID"})
+            const thought = await Thought.findById(req.params.id)
+            if (!thought){
+                return res.status(404).json({message:"No thought with that ID"})
             }
-            return res.status(200).json(user);
+            return res.status(200).json(thought);
         }catch(err){
             return res.status(500).json(err.message);
         }
     },
-    async createUser(req,res){
+    async createThought(req,res){
         try{
-            const user = await User.create(req.body);
-            return res.status(201).json(user);
+            const thought = await Thought.create(req.body);
+            await User.findByIdAndUpdate(req.body.userId, {$push:{thoughts:thought._id}}, {new:true});
+            return res.status(201).json(thought);
         }catch(err){
             return res.status(400).json(err.message);
         }
     },
-    async updateUser(req,res){
+    async updateThought(req,res){
         try{
-            const user = await User.findByIdAndUpdate(req.params.id, req.body, {new:true})
-            return res.status(201).json(user);
+            const thought = await Thought.findByIdAndUpdate(req.params.id, req.body, {new:true})
+            return res.status(201).json(thought);
         }catch(err){
             return res.status(400).json(err.message);
         }
     },
-    async deleteUser(req,res){
+    async deleteThought(req,res){
         try{
-            const user = await User.findByIdAndDelete(req.params.id);
-            if (user){
-                await Thought.deleteMany({
-                    username:user.username
-                });
-                return res.status(201).json({message:"user deleted"});
-            }
+            const thought = await Thought.findByIdAndDelete(req.params.id);
+
             return res.status(404).json({message:"No user with that ID"})
         }catch(err){
             return res.status(400).json(err.message);
+        }
+    },
+    async createReaction(req,res){
+        try{
+            const reaction = req.body;
+            const thought = await Thought.findByIdAndUpdate(
+                req.params.id,
+                {$addToSet:{reactions:req.body}},
+                {new:true}
+            )
+            if (thought){
+                return res.status(202).json(thought);
+            }else{
+                return res.status(404).json({message:"No thought with that ID"})
+            }
+        }catch(err){
+            return res.status(500).json(err.message);
+        }
+    },
+    async deleteReaction(req,res){
+        try{
+            const thought = await Thought.findByIdAndUpdate(
+                req.params.thoughtId,
+                {$pull:{reactions:{_id:req.params.reactionId}}},
+                {new:true}
+            )
+            if (thought){
+                return res.status(202).json(thought);
+            }else{
+                return res.status(404).json({message:"No thought with that ID"})
+            }
+        }catch(err){
+            return res.status(500).json(err.message);
         }
     }
 }
