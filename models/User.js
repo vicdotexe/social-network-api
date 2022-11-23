@@ -21,14 +21,14 @@ const userSchema = new Mongoose.Schema(
                 message: 'Invalid email address'
             }
         },
-        thoughts:{
+        thoughts:[{
             type: Mongoose.Schema.Types.ObjectId,
             ref: 'Thought'
-        },
-        friends:{
+        }],
+        friends:[{
             type: Mongoose.Schema.Types.ObjectId,
             ref: 'User'
-        }
+        }]
     },
     {
         toJSON:{
@@ -39,7 +39,7 @@ const userSchema = new Mongoose.Schema(
 );
 
 userSchema.virtual('friendCount')
-    .get(function(){return this.friends ? this.friends.length : 0})
+    .get(function(){return this.friends.length})
 
 const User = Mongoose.model('User', userSchema)
 
