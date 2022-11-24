@@ -19,7 +19,7 @@ router.delete('/:id', thoughts.deleteThought)
 /* ------ */
 
 //create a reaction to a thought
-router.put('/:id/reactions', thoughts.createReaction)
+router.post('/:id/reactions', thoughts.createReaction)
 
 //delete a reaction by it's id from a specific thought
 router.delete('/:thoughtId/reactions/:reactionId', thoughts.deleteReaction)

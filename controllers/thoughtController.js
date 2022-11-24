@@ -33,7 +33,7 @@ module.exports = {
     async updateThought(req,res){
         try{
             const thought = await Thought.findByIdAndUpdate(req.params.id, req.body, {new:true})
-            return res.status(201).json(thought);
+            return thought ? res.status(201).json(thought) : res.status(404).json({message:"No thought with that ID"})
         }catch(err){
             return res.status(400).json(err.message);
         }
@@ -42,7 +42,9 @@ module.exports = {
         try{
             const thought = await Thought.findByIdAndDelete(req.params.id);
 
-            return res.status(404).json({message:"No user with that ID"})
+            return thought ? 
+                res.status(200).json({message: "Deleted"})
+                : res.status(404).json({message:"No thought with that ID"})
         }catch(err){
             return res.status(400).json(err.message);
         }
